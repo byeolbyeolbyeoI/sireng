@@ -1,0 +1,9 @@
+server: 
+  port: 
+
+database:
+  user: 
+  password: 
+  protocol: 
+  path: 
+  dbname: 
