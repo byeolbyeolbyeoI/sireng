@@ -3,27 +3,44 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	dbConfig "github.com/chaaaeeee/internal/config/database"
+	"github.com/chaaaeeee/sireng/config"
 	_ "github.com/go-sql-driver/mysql"
+	"sync"
 )
 
-func NewDatabase() (*Database, error) {
-	dsn := fmt.Sprintf(dbConfig.User, dbConfig.Password, dbConfig.Protocol, dbConfig.Path, dbConfig.Name)
-	db, err := sql.Open(dbConfig.Driver, dsn)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Database{db: db}, nil
+type mariadb struct {
+	Db *sql.DB
 }
 
-type Database struct {
-	db *sql.DB
+var (
+	once       sync.Once
+	dbInstance *mariadb
+)
+
+// interface implementation (returning struct to impl)
+func NewDatabase(conf *config.Config) Database {
+	// idk if this is necessary (no cope)
+	once.Do(func() {
+		dsn := fmt.Sprintf(
+			"%s:%s@%s(%s)/%s",
+			conf.Database.User,
+			conf.Database.Password,
+			conf.Database.Protocol,
+			conf.Database.Path,
+			conf.Database.DBName)
+
+		db, err := sql.Open("mysql", dsn)
+		if err != nil {
+			panic("Failed to connect to the database")
+		}
+
+		dbInstance = &mariadb{Db: db}
+	})
+
+	return dbInstance
+
 }
 
-func (db *Database) IsConnedted() bool {
-	return false
-}
-
-func (db *Database) Reconnect() {
+func (m *mariadb) GetDb() *sql.DB {
+	return dbInstance.Db
 }
