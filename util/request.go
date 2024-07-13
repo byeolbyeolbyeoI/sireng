@@ -19,6 +19,6 @@ func Input(r *http.Request, v interface{}) error {
 	}
 
 	// check
-	fmt.Println(v)
+    fmt.Println("request.go:22", v)
 	return nil
 }

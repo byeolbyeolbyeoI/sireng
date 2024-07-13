@@ -9,8 +9,8 @@ import (
 func initializeRoutes(userHandler userHandler.UserHandler) *http.ServeMux {
 	mux := http.NewServeMux()
 
-	http.HandleFunc("/login", userHandler.Login)
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("POST /login", userHandler.Login)
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("tes")
 	})
 

@@ -33,6 +33,7 @@ func (h *HTTPServer) Start() {
 
 	// initialize routes?
 	router := initializeRoutes(userHandler)
+
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%d", h.config.Server.Port),
 		Handler: router} // routes

@@ -20,6 +20,7 @@ func (u *userHandlerImpl) Login(w http.ResponseWriter, r *http.Request) {
 	err := util.Input(r, userCredential)
 	if err != nil {
 		http.Error(w, "Error retrieving input", http.StatusInternalServerError)
+		return
 	}
 
 	// does it exist though?
@@ -27,11 +28,13 @@ func (u *userHandlerImpl) Login(w http.ResponseWriter, r *http.Request) {
 	// check if there's error
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	// if there's no error, but ok is false then do this
 	if !ok {
 		http.Error(w, "User does not exist", http.StatusInternalServerError)
+		return
 	}
 
 	// if there's no error and ok is true then continue the code (cool)
@@ -40,10 +43,12 @@ func (u *userHandlerImpl) Login(w http.ResponseWriter, r *http.Request) {
 	ok, err = u.userService.IsCorrect(userCredential.Username, userCredential.Password)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	if !ok {
 		http.Error(w, "Password Incorrect", http.StatusInternalServerError)
+		return
 	}
 
 	// ok u good my g
