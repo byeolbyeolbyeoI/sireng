@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type userRepositoryImpl struct {
@@ -16,7 +15,7 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 // refactor ke service, repo hanya untuk deal w database
-func (u *userRepositoryImpl) IsExists(username string) (bool, error) {
+func (u *userRepositoryImpl) IsExist(username string) (bool, error) {
 	var id int
 	err := u.db.QueryRow("SELECT id FROM users WHERE username=?", username).Scan(id)
 	if err == sql.ErrNoRows {
@@ -30,17 +29,12 @@ func (u *userRepositoryImpl) IsExists(username string) (bool, error) {
 	return true, nil
 }
 
-func (u *userRepositoryImpl) isCorrect(username string, password string) (bool, error) {
+func (u *userRepositoryImpl) GetPasswordHashed(username string) (string, error) {
 	var passwordHashed string
 	err := u.db.QueryRow("SELECT password_hashed FROM users WHERE username=?", username).Scan(passwordHashed)
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(passwordHashed), []byte(password))
-	if err != nil {
-		return false, err
-	}
-
-	return true, nil
+	return passwordHashed, nil
 }

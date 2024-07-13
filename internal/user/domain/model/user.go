@@ -12,7 +12,7 @@ type User struct {
 	Bio             string `json:"bio"`
 }
 
-type UserCredentials struct {
+type UserCredential struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }

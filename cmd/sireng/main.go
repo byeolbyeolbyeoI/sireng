@@ -12,6 +12,5 @@ func main() {
 	db := database.NewDatabase(conf).GetDb()
 	fmt.Println("Connected to the database...")
 	// set error handling(?)
-	fmt.Println("Server running in :8080")
 	server.NewServer(conf, db).Start()
 }
