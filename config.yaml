@@ -1,9 +1,0 @@
-server: 
-  port: 8080
-
-database:
-  user: yodamariadb
-  password: root
-  protocol: unix
-  path: /run/mysqld/mysqld.sock
-  dbname: sireng

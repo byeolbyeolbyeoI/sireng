@@ -11,6 +11,7 @@ type (
 	Config struct {
 		Server   *Server
 		Database *Database
+		JWT      *JWT
 	}
 
 	Server struct {
@@ -24,6 +25,10 @@ type (
 		Path     string
 		DBName   string
 	}
+
+	JWT struct {
+		Secret string
+	}
 )
 
 var (
@@ -35,7 +40,7 @@ func GetConfig() *Config {
 	once.Do(func() {
 		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
-		viper.AddConfigPath("./")
+		viper.AddConfigPath("./config")
 		viper.AutomaticEnv()
 		viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 

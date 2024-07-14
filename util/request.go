@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func Input(r *http.Request, v interface{}) error {
+func (u *utilImpl) Input(r *http.Request, v interface{}) error {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return err
@@ -19,6 +19,6 @@ func Input(r *http.Request, v interface{}) error {
 	}
 
 	// check
-    fmt.Println("request.go:22", v)
+	fmt.Println("request.go:22", v)
 	return nil
 }

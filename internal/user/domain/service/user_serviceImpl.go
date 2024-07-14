@@ -1,8 +1,11 @@
 package service
 
 import (
+	userModel "github.com/chaaaeeee/sireng/internal/user/domain/model"
 	userRepository "github.com/chaaaeeee/sireng/internal/user/domain/repository"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 type userServiceImpl struct {
@@ -42,4 +45,40 @@ func (u *userServiceImpl) IsCorrect(username string, password string) (bool, err
 	}
 
 	return true, nil
+}
+
+func (u *userServiceImpl) HashPassword(password string) (string, error) {
+	passwordHashed, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	if err != nil {
+		return "", err
+	}
+
+	return string(passwordHashed), nil
+}
+
+func (u *userServiceImpl) CreateUser(userCredential userModel.UserCredential) error {
+	err := u.userRepo.InputUser(userCredential)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CreateSession(username string) *jwt.Token {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": username,
+		"exp":      time.Now().Add(time.Hour * 24 * 30).Unix(),
+	})
+
+	return token
+}
+
+func SignToken(token *jwt.Token) (string, error) {
+	tokenString, err := token.SignedString([]byte("tes"))
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
