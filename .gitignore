@@ -1,0 +1,6 @@
+config/config.yaml
+config/config.yaml.bak
+
+.air.toml
+
+tmp/
