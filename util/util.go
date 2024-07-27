@@ -6,7 +6,8 @@ import (
 )
 
 type Util interface {
-	WriteJSON(http.ResponseWriter, int, interface{})
+	WriteJSON(http.ResponseWriter, int, Response)
 	Input(*http.Request, interface{}) error
 	CreateSession(string) *jwt.Token
+	SignToken(*jwt.Token) (string, error)
 }

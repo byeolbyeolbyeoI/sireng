@@ -3,16 +3,21 @@ package repository
 import (
 	"database/sql"
 	userModel "github.com/chaaaeeee/sireng/internal/user/domain/model"
+	"github.com/chaaaeeee/sireng/util"
 )
 
 type userRepositoryImpl struct {
-	db *sql.DB
+	db   *sql.DB
+	util util.Util
 }
 
 var ()
 
-func NewUserRepository(db *sql.DB) UserRepository {
-	return &userRepositoryImpl{db: db}
+func NewUserRepository(db *sql.DB, util util.Util) UserRepository {
+	return &userRepositoryImpl{
+		db:   db,
+		util: util,
+	}
 }
 
 // refactor ke service, repo hanya untuk deal w database

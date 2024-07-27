@@ -4,6 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/chaaaeeee/sireng/config"
+	trackerRepo "github.com/chaaaeeee/sireng/internal/tracker/domain/repository"
+	trackerService "github.com/chaaaeeee/sireng/internal/tracker/domain/service"
+	trackerHandler "github.com/chaaaeeee/sireng/internal/tracker/handler"
 	userRepo "github.com/chaaaeeee/sireng/internal/user/domain/repository"
 	userService "github.com/chaaaeeee/sireng/internal/user/domain/service"
 	userHandler "github.com/chaaaeeee/sireng/internal/user/handler"
@@ -30,12 +33,16 @@ func NewServer(conf *config.Config, db *sql.DB, util util.Util) Server {
 }
 
 func (h *HTTPServer) Start() {
-	userRepo := userRepo.NewUserRepository(h.db)
-	userService := userService.NewUserService(userRepo)
-	userHandler := userHandler.NewUserHandler(userService)
+	userRepo := userRepo.NewUserRepository(h.db, h.util)
+	userService := userService.NewUserService(userRepo, h.util)
+	userHandler := userHandler.NewUserHandler(userService, h.util)
+
+	trackerRepo := trackerRepo.NewTrackerRepository(h.db, h.util)
+	trackerService := trackerService.NewTrackerService(trackerRepo, h.util)
+	trackerHandler := trackerHandler.NewTrackerHandler(trackerService, h.util)
 
 	// initialize routes?
-	router := initializeRoutes(userHandler)
+	router := initializeRoutes(userHandler, trackerHandler)
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%d", h.config.Server.Port),

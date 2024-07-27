@@ -3,6 +3,7 @@ package service
 import (
 	userModel "github.com/chaaaeeee/sireng/internal/user/domain/model"
 	userRepository "github.com/chaaaeeee/sireng/internal/user/domain/repository"
+	"github.com/chaaaeeee/sireng/util"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"time"
@@ -10,10 +11,14 @@ import (
 
 type userServiceImpl struct {
 	userRepo userRepository.UserRepository
+	util     util.Util
 }
 
-func NewUserService(userRepo userRepository.UserRepository) UserService {
-	return &userServiceImpl{userRepo: userRepo}
+func NewUserService(userRepo userRepository.UserRepository, util util.Util) UserService {
+	return &userServiceImpl{
+		userRepo: userRepo,
+		util:     util,
+	}
 }
 
 // i don't think this is effective, i think if the id is successfully returned we can put true here(?)
