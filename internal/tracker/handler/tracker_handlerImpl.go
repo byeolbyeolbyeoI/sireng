@@ -2,12 +2,10 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	trackerModel "github.com/chaaaeeee/sireng/internal/tracker/domain/model"
 	trackerService "github.com/chaaaeeee/sireng/internal/tracker/domain/service"
 	"github.com/chaaaeeee/sireng/util"
 	"net/http"
-	"time"
 )
 
 type (

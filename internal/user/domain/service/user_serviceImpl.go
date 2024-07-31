@@ -4,21 +4,29 @@ import (
 	userModel "github.com/chaaaeeee/sireng/internal/user/domain/model"
 	userRepository "github.com/chaaaeeee/sireng/internal/user/domain/repository"
 	"github.com/chaaaeeee/sireng/util"
+	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
 type userServiceImpl struct {
-	userRepo userRepository.UserRepository
-	util     util.Util
+	userRepo  userRepository.UserRepository
+	util      util.Util
+	validator *validator.Validate
 }
 
-func NewUserService(userRepo userRepository.UserRepository, util util.Util) UserService {
+func NewUserService(userRepo userRepository.UserRepository, util util.Util, validator *validator.Validate) UserService {
 	return &userServiceImpl{
-		userRepo: userRepo,
-		util:     util,
+		userRepo:  userRepo,
+		util:      util,
+		validator: validator,
 	}
+}
+
+func (u *userServiceImpl) ValidateCreateUserInput(userCredential userModel.UserCredential) error {
+    //validate
+	return nil
 }
 
 // i don't think this is effective, i think if the id is successfully returned we can put true here(?)

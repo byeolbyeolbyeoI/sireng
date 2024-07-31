@@ -4,17 +4,20 @@ import (
 	trackerModel "github.com/chaaaeeee/sireng/internal/tracker/domain/model"
 	trackerRepository "github.com/chaaaeeee/sireng/internal/tracker/domain/repository"
 	"github.com/chaaaeeee/sireng/util"
+	"github.com/go-playground/validator/v10"
 )
 
 type trackerServiceImpl struct {
 	trackerRepo trackerRepository.TrackerRepository
 	util        util.Util
+	validator   *validator.Validate
 }
 
-func NewTrackerService(trackerRepo trackerRepository.TrackerRepository, util util.Util) TrackerService {
+func NewTrackerService(trackerRepo trackerRepository.TrackerRepository, util util.Util, validator *validator.Validate) TrackerService {
 	return &trackerServiceImpl{
 		trackerRepo: trackerRepo,
 		util:        util,
+		validator:   validator,
 	}
 }
 
