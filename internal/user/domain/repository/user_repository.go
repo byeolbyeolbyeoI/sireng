@@ -8,4 +8,5 @@ type UserRepository interface {
 	IsExist(string) (bool, error)
 	GetPasswordHashed(string) (string, error)
 	InputUser(userModel.UserCredential) error
+	GetUserRoleByUsername(string) (string, error)
 }

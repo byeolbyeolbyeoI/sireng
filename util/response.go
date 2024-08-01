@@ -6,8 +6,8 @@ import (
 )
 
 type Response struct {
-	Success bool        `json:"success"`
-	Message string      `json:"message"`
+	Success bool        `json:"success" validate:"required"`
+	Message string      `json:"message" validate:"required"`
 	Data    interface{} `json:"data"`
 }
 

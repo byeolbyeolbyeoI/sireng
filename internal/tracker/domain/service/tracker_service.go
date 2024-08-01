@@ -5,5 +5,7 @@ import (
 )
 
 type TrackerService interface {
-	CreateSession(trackerModel.StudySessionRequest) error
+	IsSessionActiveByUserId(int) (bool, error)
+	CreateStudySession(trackerModel.StudySessionRequest) error
+	EndStudySession(int) error
 }

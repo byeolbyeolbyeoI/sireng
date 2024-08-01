@@ -1,5 +1,6 @@
 config/config.yaml
 config/config.yaml.bak
+database/.tables
 
 .air.toml
 

@@ -31,6 +31,15 @@ func (u *userHandlerImpl) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = u.userService.ValidateUserCredential(userCredential)
+	if err != nil {
+		u.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
 	ok, err := u.userService.IsExist(userCredential.Username)
 	if err != nil {
 		u.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
@@ -85,6 +94,15 @@ func (u *userHandlerImpl) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = u.userService.ValidateUserCredential(userCredential)
+	if err != nil {
+		u.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
 	fmt.Println("user_handlerImpl.go:64", userCredential.Username, userCredential.Password)
 	// does it exist though?
 	// check if there's error
@@ -128,9 +146,15 @@ func (u *userHandlerImpl) Login(w http.ResponseWriter, r *http.Request) {
 
 	// ok u good my g
 	// now jwt
-	token := u.util.CreateSession(userCredential.Username)
+	role, err := u.userService.GetUserRole(userCredential.Username)
+	if err != nil {
+		u.util.WriteJSON(w, http.StatusUnauthorized, util.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+	}
 
-	tokenString, err := u.util.SignToken(token)
+	tokenString, err := u.userService.GenerateTokenString(userCredential.Username, role)
 	if err != nil {
 		u.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
 			Success: false,
@@ -138,19 +162,6 @@ func (u *userHandlerImpl) Login(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-
-	// decided to use statelessness
-	/*
-		cookie := &http.Cookie{
-			Name:     "token",
-			Value:    tokenString,
-			Expires:  time.Now().Add(24 * 3600 * time.Second),
-			MaxAge:   3600 * 24 * 30,
-			HttpOnly: true,
-		}
-
-		http.SetCookie(w, cookie)
-	*/
 
 	u.util.WriteJSON(w, http.StatusOK, util.Response{
 		Success: true,
@@ -160,22 +171,3 @@ func (u *userHandlerImpl) Login(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 }
-
-/*
-func (u *userHandlerImpl) Logout(w http.ResponseWriter, r *http.Request) {
-	cookie := &http.Cookie{
-		Name:     "token",
-		Value:    "",
-		HttpOnly: true,
-		Expires:  time.Unix(0, 0),
-		MaxAge:   -1,
-	}
-
-	http.SetCookie(w, cookie)
-
-	u.util.WriteJSON(w, http.StatusOK, util.Response{
-		Success: true,
-		Message: "User logged out successfully",
-	})
-}
-*/

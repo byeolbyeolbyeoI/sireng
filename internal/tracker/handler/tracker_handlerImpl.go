@@ -38,8 +38,25 @@ func (t *TrackerHandlerImpl) CreateStudySessionHandler(w http.ResponseWriter, r 
 		return
 	}
 
+	isActive, err := t.trackerService.IsSessionActiveByUserId(studySessionRequest.UserId)
+	if err != nil {
+		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	if isActive {
+		t.util.WriteJSON(w, http.StatusNotFound, util.Response{
+			Success: false,
+			Message: "User is currently studying",
+		})
+		return
+	}
+
 	//create session
-	err = t.trackerService.CreateSession(studySessionRequest)
+	err = t.trackerService.CreateStudySession(studySessionRequest)
 	if err != nil {
 		// is in session
 		if errors.Is(err, trackerService.ErrUserAlreadyInSession) {
@@ -58,6 +75,55 @@ func (t *TrackerHandlerImpl) CreateStudySessionHandler(w http.ResponseWriter, r 
 
 	t.util.WriteJSON(w, http.StatusOK, util.Response{
 		Success: true,
-		Message: "Study Session Created Successfully",
+		Message: "Study session created successfully",
+	})
+}
+
+func (t *TrackerHandlerImpl) EndStudySessionHandler(w http.ResponseWriter, r *http.Request) {
+	type requestStruct struct {
+		UserId int `json:"userId"`
+	}
+
+	var request requestStruct
+
+	err := t.util.Input(r, &request)
+	if err != nil {
+		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	// check for active session
+
+	isActive, err := t.trackerService.IsSessionActiveByUserId(request.UserId)
+	if err != nil {
+		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	if !isActive {
+		t.util.WriteJSON(w, http.StatusNotFound, util.Response{
+			Success: false,
+			Message: "User is not studying",
+		})
+		return
+	}
+	err = t.trackerService.EndStudySession(request.UserId)
+	if err != nil {
+		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	t.util.WriteJSON(w, http.StatusOK, util.Response{
+		Success: true,
+		Message: "Study session ended successfully",
 	})
 }

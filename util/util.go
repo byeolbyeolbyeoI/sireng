@@ -8,6 +8,6 @@ import (
 type Util interface {
 	WriteJSON(http.ResponseWriter, int, Response)
 	Input(*http.Request, interface{}) error
-	CreateSession(string) *jwt.Token
+	GenerateToken(string, string) *jwt.Token
 	SignToken(*jwt.Token) (string, error)
 }

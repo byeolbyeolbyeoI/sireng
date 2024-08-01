@@ -9,4 +9,7 @@ type UserService interface {
 	IsCorrect(string, string) (bool, error)
 	HashPassword(string) (string, error)
 	CreateUser(userModel.UserCredential) error
+	ValidateUserCredential(userModel.UserCredential) error
+	GenerateTokenString(string, string) (string, error)
+	GetUserRole(string) (string, error)
 }

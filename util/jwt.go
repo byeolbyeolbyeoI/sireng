@@ -5,9 +5,12 @@ import (
 	"time"
 )
 
-func (u *utilImpl) CreateSession(username string) *jwt.Token {
+func (u *utilImpl) GenerateToken(username string, role string) *jwt.Token {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"aud":      "SirengAPI",
+		"iss":      "Sireng",
 		"username": username,
+		"role":     nil,
 		"exp":      time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
 

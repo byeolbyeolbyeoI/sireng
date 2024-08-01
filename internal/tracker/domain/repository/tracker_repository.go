@@ -7,5 +7,6 @@ import (
 type TrackerRepository interface {
 	GetStudySessionsFromUserId(int) ([]trackerModel.StudySession, error)
 	IsSessionActiveByUserId(int) (bool, error)
-	CreateSession(trackerModel.StudySessionRequest) error
+	CreateStudySession(trackerModel.StudySessionRequest) error
+	EndStudySession(int) error
 }

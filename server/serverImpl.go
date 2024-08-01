@@ -16,33 +16,33 @@ import (
 )
 
 type HTTPServer struct {
-	mux       *http.ServeMux
-	config    *config.Config // using 'conf' cuz tabrakan with config package, or not really... since we have to call the struct name first.., decided to use config
-	db        *sql.DB
-	util      util.Util
-	validator *validator.Validate
+	mux      *http.ServeMux
+	config   *config.Config // using 'conf' cuz tabrakan with config package, or not really... since we have to call the struct name first.., decided to use config
+	db       *sql.DB
+	util     util.Util
+	validate *validator.Validate
 }
 
 func NewServer(conf *config.Config, db *sql.DB, util util.Util) Server {
 	mux := http.NewServeMux()
-	validator := validator.New()
+	validate := validator.New(validator.WithRequiredStructEnabled())
 
 	return &HTTPServer{
-		mux:       mux,
-		config:    conf,
-		db:        db,
-		util:      util,
-		validator: validator,
+		mux:      mux,
+		config:   conf,
+		db:       db,
+		util:     util,
+		validate: validate,
 	}
 }
 
 func (h *HTTPServer) Start() {
 	userRepo := userRepo.NewUserRepository(h.db, h.util)
-	userService := userService.NewUserService(userRepo, h.util, h.validator)
+	userService := userService.NewUserService(userRepo, h.util, h.validate)
 	userHandler := userHandler.NewUserHandler(userService, h.util)
 
 	trackerRepo := trackerRepo.NewTrackerRepository(h.db, h.util)
-	trackerService := trackerService.NewTrackerService(trackerRepo, h.util, h.validator)
+	trackerService := trackerService.NewTrackerService(trackerRepo, h.util, h.validate)
 	trackerHandler := trackerHandler.NewTrackerHandler(trackerService, h.util)
 
 	// initialize routes?

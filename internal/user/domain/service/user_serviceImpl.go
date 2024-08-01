@@ -5,27 +5,29 @@ import (
 	userRepository "github.com/chaaaeeee/sireng/internal/user/domain/repository"
 	"github.com/chaaaeeee/sireng/util"
 	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 type userServiceImpl struct {
-	userRepo  userRepository.UserRepository
-	util      util.Util
-	validator *validator.Validate
+	userRepo userRepository.UserRepository
+	util     util.Util
+	validate *validator.Validate
 }
 
-func NewUserService(userRepo userRepository.UserRepository, util util.Util, validator *validator.Validate) UserService {
+func NewUserService(userRepo userRepository.UserRepository, util util.Util, validate *validator.Validate) UserService {
 	return &userServiceImpl{
-		userRepo:  userRepo,
-		util:      util,
-		validator: validator,
+		userRepo: userRepo,
+		util:     util,
+		validate: validate,
 	}
 }
 
-func (u *userServiceImpl) ValidateCreateUserInput(userCredential userModel.UserCredential) error {
-    //validate
+func (u *userServiceImpl) ValidateUserCredential(userCredential userModel.UserCredential) error {
+	//validate
+	err := u.validate.Struct(userCredential)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -78,20 +80,22 @@ func (u *userServiceImpl) CreateUser(userCredential userModel.UserCredential) er
 	return nil
 }
 
-func CreateSession(username string) *jwt.Token {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": username,
-		"exp":      time.Now().Add(time.Hour * 24 * 30).Unix(),
-	})
+func (u *userServiceImpl) GenerateTokenString(username string, role string) (string, error) {
+	token := u.util.GenerateToken(username, role)
 
-	return token
-}
-
-func SignToken(token *jwt.Token) (string, error) {
-	tokenString, err := token.SignedString([]byte("tes"))
+	tokenString, err := u.util.SignToken(token)
 	if err != nil {
 		return "", err
 	}
 
 	return tokenString, nil
+}
+
+func (u *userServiceImpl) GetUserRole(username string) (string, error) {
+	role, err := u.userRepo.GetUserRoleByUsername(username)
+	if err != nil {
+		return "", err
+	}
+
+	return role, nil
 }

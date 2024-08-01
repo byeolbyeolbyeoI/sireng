@@ -3,7 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"fmt"
+
 	trackerModel "github.com/chaaaeeee/sireng/internal/tracker/domain/model"
 	"github.com/chaaaeeee/sireng/util"
 )
@@ -63,22 +63,23 @@ func (t *trackerRepositoryImpl) IsSessionActiveByUserId(userId int) (bool, error
 	return true, nil
 }
 
-func (t *trackerRepositoryImpl) CreateSession(studySession trackerModel.StudySessionRequest) error {
-	fmt.Println("in")
-	fmt.Println(studySession.UserId)
-	fmt.Println(studySession.Name)
-	fmt.Println(studySession.SessionStart)
-	fmt.Println(studySession.Note)
-	_, err := t.db.Exec("INSERT INTO study_sessions(user_id, name, session_start, note) VALUES (?,?,?,?)",
+func (t *trackerRepositoryImpl) CreateStudySession(studySession trackerModel.StudySessionRequest) error {
+	_, err := t.db.Exec("INSERT INTO study_sessions(user_id, name, note) VALUES (?,?,?)",
 		studySession.UserId,
 		studySession.Name,
-		studySession.SessionStart,
 		studySession.Note,
 	)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("bug")
+	return nil
+}
+
+func (t *trackerRepositoryImpl) EndStudySession(userId int) error {
+	_, err := t.db.Exec("UPDATE study_sessions SET session_end=CURRENT_TIMESTAMP WHERE user_id=?", userId)
+	if err != nil {
+		return err
+	}
 	return nil
 }

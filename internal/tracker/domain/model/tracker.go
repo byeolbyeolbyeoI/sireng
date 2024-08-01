@@ -15,8 +15,7 @@ type StudySession struct {
 }
 
 type StudySessionRequest struct {
-	UserId       int       `json:"userId"`
-	Name         string    `json:"name"`
-	SessionStart time.Time `json:"sessionStart"`
-	Note         string    `json:"note"`
+	UserId int    `json:"userId" validate:"required"`
+	Name   string `json:"name"`
+	Note   string `json:"note"`
 }

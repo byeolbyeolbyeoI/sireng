@@ -46,10 +46,20 @@ func (u *userRepositoryImpl) GetPasswordHashed(username string) (string, error) 
 }
 
 func (u *userRepositoryImpl) InputUser(userCredential userModel.UserCredential) error {
-	_, err := u.db.Exec("INSERT INTO users(username, password_hashed, role_id) VALUES (?,?,?)", userCredential.Username, userCredential.Password, 1)
+	_, err := u.db.Exec("INSERT INTO users(username, password_hashed, role) VALUES (?,?,?)", userCredential.Username, userCredential.Password, "user")
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (u *userRepositoryImpl) GetUserRoleByUsername(username string) (string, error) {
+	var role string
+	err := u.db.QueryRow("SELECT role FROM users WHERE username=?", username).Scan(&role)
+	if err != nil {
+		return "", err
+	}
+
+	return role, nil
 }

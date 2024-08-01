@@ -13,8 +13,8 @@ type User struct {
 }
 
 type UserCredential struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" validate:"required,max=20"`
+	Password string `json:"password" validate:"required"`
 }
 
 type Role struct {
