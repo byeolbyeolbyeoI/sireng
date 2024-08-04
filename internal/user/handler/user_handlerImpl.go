@@ -20,6 +20,18 @@ func NewUserHandler(userService userService.UserService, util util.Util) UserHan
 	}
 }
 
+// SignUp handles the user registration process.
+// @Summary Register a new user
+// @Description Registers a new user by taking user credentials, validating them, and storing them in the database.
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param userCredential body userModel.UserCredential true "User Credentials"
+// @Success 200 {object} util.Response "User signed up successfully"
+// @Failure 409 {object} util.Response "Username already registered"
+// @Failure 500 {object} util.Response "Internal Server Error"
+// @Router /signup [post]
+
 func (u *userHandlerImpl) SignUp(w http.ResponseWriter, r *http.Request) {
 	var userCredential userModel.UserCredential
 	err := u.util.Input(r, &userCredential)

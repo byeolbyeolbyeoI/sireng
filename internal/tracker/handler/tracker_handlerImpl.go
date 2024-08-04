@@ -38,6 +38,15 @@ func (t *TrackerHandlerImpl) CreateStudySessionHandler(w http.ResponseWriter, r 
 		return
 	}
 
+	err = t.trackerService.ValidateStudySessionRequest(studySessionRequest)
+	if err != nil {
+		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
 	isActive, err := t.trackerService.IsSessionActiveByUserId(studySessionRequest.UserId)
 	if err != nil {
 		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
@@ -81,7 +90,7 @@ func (t *TrackerHandlerImpl) CreateStudySessionHandler(w http.ResponseWriter, r 
 
 func (t *TrackerHandlerImpl) EndStudySessionHandler(w http.ResponseWriter, r *http.Request) {
 	type requestStruct struct {
-		UserId int `json:"userId"`
+		UserId int `json:"userId" validate:"required"`
 	}
 
 	var request requestStruct
@@ -113,6 +122,7 @@ func (t *TrackerHandlerImpl) EndStudySessionHandler(w http.ResponseWriter, r *ht
 		})
 		return
 	}
+
 	err = t.trackerService.EndStudySession(request.UserId)
 	if err != nil {
 		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{

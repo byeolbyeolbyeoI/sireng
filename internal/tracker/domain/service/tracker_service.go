@@ -8,4 +8,5 @@ type TrackerService interface {
 	IsSessionActiveByUserId(int) (bool, error)
 	CreateStudySession(trackerModel.StudySessionRequest) error
 	EndStudySession(int) error
+	ValidateStudySessionRequest(trackerModel.StudySessionRequest) error
 }

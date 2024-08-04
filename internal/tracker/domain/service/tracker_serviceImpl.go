@@ -51,3 +51,12 @@ func (t *trackerServiceImpl) EndStudySession(userId int) error {
 
 	return nil
 }
+
+func (u *trackerServiceImpl) ValidateStudySessionRequest(studySessionRequest trackerModel.StudySessionRequest) error {
+	//validate
+	err := u.validate.Struct(studySessionRequest)
+	if err != nil {
+		return err
+	}
+	return nil
+}
