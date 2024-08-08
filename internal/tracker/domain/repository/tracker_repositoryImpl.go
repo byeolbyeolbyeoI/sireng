@@ -64,7 +64,7 @@ func (t *trackerRepositoryImpl) IsSessionActiveByUserId(userId int) (bool, error
 }
 
 func (t *trackerRepositoryImpl) CreateStudySession(studySession trackerModel.StudySessionRequest) error {
-	_, err := t.db.Exec("INSERT INTO study_sessions(user_id, name, note) VALUES (?,?,?)",
+	_, err := t.db.Exec("INSERT INTO study_sessions(user_id, name, session_start, note) VALUES (?,?,current_timetamp, ?)",
 		studySession.UserId,
 		studySession.Name,
 		studySession.Note,

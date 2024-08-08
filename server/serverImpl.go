@@ -10,6 +10,7 @@ import (
 	userRepo "github.com/chaaaeeee/sireng/internal/user/domain/repository"
 	userService "github.com/chaaaeeee/sireng/internal/user/domain/service"
 	userHandler "github.com/chaaaeeee/sireng/internal/user/handler"
+	middleware "github.com/chaaaeeee/sireng/middleware"
 	"github.com/chaaaeeee/sireng/util"
 	"github.com/go-playground/validator/v10"
 	"net/http"
@@ -17,7 +18,7 @@ import (
 
 type HTTPServer struct {
 	mux      *http.ServeMux
-	config   *config.Config // using 'conf' cuz tabrakan with config package, or not really... since we have to call the struct name first.., decided to use config
+	config   *config.Config // using 'conf' cuz tabrakan with config package, or not really...
 	db       *sql.DB
 	util     util.Util
 	validate *validator.Validate
@@ -37,16 +38,19 @@ func NewServer(conf *config.Config, db *sql.DB, util util.Util) Server {
 }
 
 func (h *HTTPServer) Start() {
-	userRepo := userRepo.NewUserRepository(h.db, h.util)
-	userService := userService.NewUserService(userRepo, h.util, h.validate)
-	userHandler := userHandler.NewUserHandler(userService, h.util)
+	middlewareService := middleware.NewMiddlewareService(h.config)
+	middleware := middleware.NewMiddleware(middlewareService, h.util)
+	userRepoInstance := userRepo.NewUserRepository(h.db, h.util)
+	userServiceInstance := userService.NewUserService(userRepoInstance, h.util, h.validate)
+	userHandlerInstance := userHandler.NewUserHandler(userServiceInstance, h.util)
 
-	trackerRepo := trackerRepo.NewTrackerRepository(h.db, h.util)
-	trackerService := trackerService.NewTrackerService(trackerRepo, h.util, h.validate)
-	trackerHandler := trackerHandler.NewTrackerHandler(trackerService, h.util)
+	trackerRepoInstance := trackerRepo.NewTrackerRepository(h.db, h.util)
+	trackerServiceInstance := trackerService.NewTrackerService(trackerRepoInstance, h.util, h.validate)
+	trackerHandlerInstance := trackerHandler.NewTrackerHandler(trackerServiceInstance, h.util)
 
 	// initialize routes?
-	router := initializeRoutes(userHandler, trackerHandler)
+	// pass mw here
+	router := initializeRoutes(h.mux, userHandlerInstance, trackerHandlerInstance, middleware)
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%d", h.config.Server.Port),
