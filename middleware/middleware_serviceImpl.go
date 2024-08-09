@@ -94,3 +94,11 @@ func (m *middlewareServiceImpl) IsAdmin(claims jwt.MapClaims) bool {
 
 	return true
 }
+func (m *middlewareServiceImpl) IsUser(claims jwt.MapClaims) bool {
+	fmt.Println(claims["role"])
+	if claims["role"] != "user" {
+		return false
+	}
+
+	return true
+}

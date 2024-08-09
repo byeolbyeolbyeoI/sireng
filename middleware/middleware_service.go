@@ -11,4 +11,5 @@ type MiddlewareService interface {
 	ExtractClaims(*http.Request) (jwt.MapClaims, error)
 	IsAuthenticated(jwt.MapClaims) bool
 	IsAdmin(jwt.MapClaims) bool
+	IsUser(jwt.MapClaims) bool
 }

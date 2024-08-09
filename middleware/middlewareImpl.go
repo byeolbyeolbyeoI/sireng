@@ -65,3 +65,27 @@ func (m *MiddlewareImpl) IsAdmin(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func (m *MiddlewareImpl) IsUser(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		claims, err := m.service.ExtractClaims(r)
+		if err != nil {
+			m.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+
+		ok := m.service.IsUser(claims)
+		if !ok {
+			m.util.WriteJSON(w, http.StatusUnauthorized, util.Response{
+				Success: false,
+				Message: "User is not a user",
+			})
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
