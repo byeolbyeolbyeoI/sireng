@@ -10,7 +10,7 @@ func (u *utilImpl) GenerateToken(username string, role string) *jwt.Token {
 		"aud":      "SirengAPI",
 		"iss":      "Sireng",
 		"username": username,
-		"role":     nil,
+		"role":     role,
 		"exp":      time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
 

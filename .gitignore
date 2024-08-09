@@ -1,6 +1,7 @@
 config/config.yaml
 config/config.yaml.bak
 database/.tables
+.idea
 
 .air.toml
 
