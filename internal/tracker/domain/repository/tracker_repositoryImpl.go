@@ -22,7 +22,7 @@ func NewTrackerRepository(db *sql.DB, util util.Util) TrackerRepository {
 	}
 }
 
-func (t *trackerRepositoryImpl) GetStudySessionsFromUserId(userId int) ([]trackerModel.StudySession, error) {
+func (t *trackerRepositoryImpl) GetStudySessionsByUserId(userId int) ([]trackerModel.StudySession, error) {
 	var studySession trackerModel.StudySession
 	var studySessions []trackerModel.StudySession
 	rows, err := t.db.Query("SELECT id, user_id, name, session_start, session_end, total_time, note FROM study_sessions WHERE user_id=?", userId)
@@ -50,6 +50,36 @@ func (t *trackerRepositoryImpl) GetStudySessionsFromUserId(userId int) ([]tracke
 
 	return studySessions, nil
 }
+
+func (t *trackerRepositoryImpl) GetStudySessions() ([]trackerModel.StudySession, error) {
+	var studySession trackerModel.StudySession
+	var studySessions []trackerModel.StudySession
+	rows, err := t.db.Query("SELECT id, user_id, name, session_start, session_end, total_time, note FROM study_sessions")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err := rows.Scan(
+			&studySession.Id,
+			&studySession.UserId,
+			&studySession.Name,
+			&studySession.SessionStart,
+			&studySession.SessionEnd,
+			&studySession.TotalTime,
+			&studySession.Note,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		studySessions = append(studySessions, studySession)
+	}
+
+	return studySessions, nil
+}
+
 func (t *trackerRepositoryImpl) IsSessionActiveByUserId(userId int) (bool, error) {
 	var id int
 	err := t.db.QueryRow("SELECT id FROM study_sessions WHERE user_id=? AND session_end IS NULL", userId).Scan(&id)
@@ -64,7 +94,7 @@ func (t *trackerRepositoryImpl) IsSessionActiveByUserId(userId int) (bool, error
 }
 
 func (t *trackerRepositoryImpl) CreateStudySession(studySession trackerModel.StudySessionRequest) error {
-	_, err := t.db.Exec("INSERT INTO study_sessions(user_id, name, session_start, note) VALUES (?,?,current_timetamp, ?)",
+	_, err := t.db.Exec("INSERT INTO study_sessions(user_id, name, session_start, note) VALUES (?,?,CURRENT_TIMESTAMP, ?)",
 		studySession.UserId,
 		studySession.Name,
 		studySession.Note,

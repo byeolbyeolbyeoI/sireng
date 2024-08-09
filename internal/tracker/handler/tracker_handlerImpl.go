@@ -6,27 +6,74 @@ import (
 	trackerService "github.com/chaaaeeee/sireng/internal/tracker/domain/service"
 	"github.com/chaaaeeee/sireng/util"
 	"net/http"
+	"strconv"
 )
 
 type (
 	TrackerHandlerImpl struct {
-		trackerService trackerService.TrackerService
-		util           util.Util
+		service trackerService.TrackerService
+		util    util.Util
 	}
 )
 
 func NewTrackerHandler(service trackerService.TrackerService, util util.Util) TrackerHandler {
 	return &TrackerHandlerImpl{
-		trackerService: service,
-		util:           util,
+		service: service,
+		util:    util,
 	}
 }
 
-func (t *TrackerHandlerImpl) GetStudySessionsByUserIdHandler(w http.ResponseWriter, r *http.Request) {
+func (t *TrackerHandlerImpl) GetStudySessionsByUserId(w http.ResponseWriter, r *http.Request) {
+	userId, err := strconv.Atoi(r.PathValue("userId"))
+	if err != nil {
+		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+	}
 
+	if err := t.service.ValidateParam(userId); err != nil {
+		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	studySessions, err := t.service.GetStudySessionsByUserId(userId)
+	if err != nil {
+		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	t.util.WriteJSON(w, http.StatusOK, util.Response{
+		Success: true,
+		Message: "Study sessions retrieved successfully",
+		Data:    studySessions,
+	})
 }
 
-func (t *TrackerHandlerImpl) CreateStudySessionHandler(w http.ResponseWriter, r *http.Request) {
+func (t *TrackerHandlerImpl) GetStudySessions(w http.ResponseWriter, r *http.Request) {
+	studySessions, err := t.service.GetStudySessions()
+	if err != nil {
+		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	t.util.WriteJSON(w, http.StatusOK, util.Response{
+		Success: true,
+		Message: "Study sessions retrieved successfully",
+		Data:    studySessions,
+	})
+}
+
+func (t *TrackerHandlerImpl) CreateStudySession(w http.ResponseWriter, r *http.Request) {
 	var studySessionRequest trackerModel.StudySessionRequest
 	// take input
 	err := t.util.Input(r, &studySessionRequest)
@@ -38,7 +85,7 @@ func (t *TrackerHandlerImpl) CreateStudySessionHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	err = t.trackerService.ValidateStudySessionRequest(studySessionRequest)
+	err = t.service.ValidateStudySessionRequest(studySessionRequest)
 	if err != nil {
 		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
 			Success: false,
@@ -47,7 +94,7 @@ func (t *TrackerHandlerImpl) CreateStudySessionHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	isActive, err := t.trackerService.IsSessionActiveByUserId(studySessionRequest.UserId)
+	isActive, err := t.service.IsSessionActiveByUserId(studySessionRequest.UserId)
 	if err != nil {
 		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
 			Success: false,
@@ -65,7 +112,7 @@ func (t *TrackerHandlerImpl) CreateStudySessionHandler(w http.ResponseWriter, r 
 	}
 
 	//create session
-	err = t.trackerService.CreateStudySession(studySessionRequest)
+	err = t.service.CreateStudySession(studySessionRequest)
 	if err != nil {
 		// is in session
 		if errors.Is(err, trackerService.ErrUserAlreadyInSession) {
@@ -88,15 +135,17 @@ func (t *TrackerHandlerImpl) CreateStudySessionHandler(w http.ResponseWriter, r 
 	})
 }
 
-func (t *TrackerHandlerImpl) EndStudySessionHandler(w http.ResponseWriter, r *http.Request) {
-	type requestStruct struct {
-		UserId int `json:"userId" validate:"required"`
+func (t *TrackerHandlerImpl) EndStudySession(w http.ResponseWriter, r *http.Request) {
+	userId, err := strconv.Atoi(r.PathValue("userId"))
+	if err != nil {
+		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
+			Success: false,
+			Message: err.Error(),
+		})
 	}
 
-	var request requestStruct
-
-	err := t.util.Input(r, &request)
-	if err != nil {
+	// check for active session
+	if err := t.service.ValidateParam(userId); err != nil {
 		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
 			Success: false,
 			Message: err.Error(),
@@ -104,9 +153,7 @@ func (t *TrackerHandlerImpl) EndStudySessionHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	// check for active session
-
-	isActive, err := t.trackerService.IsSessionActiveByUserId(request.UserId)
+	isActive, err := t.service.IsSessionActiveByUserId(userId)
 	if err != nil {
 		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
 			Success: false,
@@ -123,7 +170,7 @@ func (t *TrackerHandlerImpl) EndStudySessionHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	err = t.trackerService.EndStudySession(request.UserId)
+	err = t.service.EndStudySession(userId)
 	if err != nil {
 		t.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
 			Success: false,

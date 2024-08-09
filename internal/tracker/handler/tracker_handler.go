@@ -5,7 +5,8 @@ import (
 )
 
 type TrackerHandler interface {
-	GetStudySessionsByUserIdHandler(w http.ResponseWriter, r *http.Request)
-	CreateStudySessionHandler(w http.ResponseWriter, r *http.Request)
-	EndStudySessionHandler(w http.ResponseWriter, r *http.Request)
+	GetStudySessionsByUserId(w http.ResponseWriter, r *http.Request)
+	GetStudySessions(w http.ResponseWriter, r *http.Request)
+	CreateStudySession(w http.ResponseWriter, r *http.Request)
+	EndStudySession(w http.ResponseWriter, r *http.Request)
 }

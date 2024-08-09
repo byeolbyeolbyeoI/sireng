@@ -9,14 +9,14 @@ import (
 )
 
 type userServiceImpl struct {
-	userRepo userRepository.UserRepository
+	repo     userRepository.UserRepository
 	util     util.Util
 	validate *validator.Validate
 }
 
 func NewUserService(userRepo userRepository.UserRepository, util util.Util, validate *validator.Validate) UserService {
 	return &userServiceImpl{
-		userRepo: userRepo,
+		repo:     userRepo,
 		util:     util,
 		validate: validate,
 	}
@@ -33,7 +33,7 @@ func (u *userServiceImpl) ValidateUserCredential(userCredential userModel.UserCr
 
 // i don't think this is effective, i think if the id is successfully returned we can put true here(?)
 func (u *userServiceImpl) IsExist(username string) (bool, error) {
-	ok, err := u.userRepo.IsExist(username)
+	ok, err := u.repo.IsExist(username)
 	// there's an error, or tons of errors
 	if err != nil {
 		return false, err
@@ -49,7 +49,7 @@ func (u *userServiceImpl) IsExist(username string) (bool, error) {
 }
 
 func (u *userServiceImpl) IsCorrect(username string, password string) (bool, error) {
-	passwordHashed, err := u.userRepo.GetPasswordHashed(username)
+	passwordHashed, err := u.repo.GetPasswordHashed(username)
 	if err != nil {
 		return false, err
 	}
@@ -72,7 +72,7 @@ func (u *userServiceImpl) HashPassword(password string) (string, error) {
 }
 
 func (u *userServiceImpl) CreateUser(userCredential userModel.UserCredential) error {
-	err := u.userRepo.InputUser(userCredential)
+	err := u.repo.InputUser(userCredential)
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (u *userServiceImpl) GenerateTokenString(username string, role string) (str
 }
 
 func (u *userServiceImpl) GetUserRole(username string) (string, error) {
-	role, err := u.userRepo.GetUserRoleByUsername(username)
+	role, err := u.repo.GetUserRoleByUsername(username)
 	if err != nil {
 		return "", err
 	}
