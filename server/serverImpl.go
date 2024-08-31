@@ -10,6 +10,7 @@ import (
 	userRepo "github.com/chaaaeeee/sireng/internal/user/domain/repository"
 	userService "github.com/chaaaeeee/sireng/internal/user/domain/service"
 	userHandler "github.com/chaaaeeee/sireng/internal/user/handler"
+	ws "github.com/chaaaeeee/sireng/internal/ws"
 	middleware "github.com/chaaaeeee/sireng/middleware"
 	"github.com/chaaaeeee/sireng/util"
 	"github.com/go-playground/validator/v10"
@@ -39,7 +40,7 @@ func NewServer(conf *config.Config, db *sql.DB, util util.Util) Server {
 
 func (h *HTTPServer) Start() {
 	middlewareService := middleware.NewMiddlewareService(h.config)
-	middleware := middleware.NewMiddleware(middlewareService, h.util)
+	middlewareInstance := middleware.NewMiddleware(middlewareService, h.util)
 	userRepoInstance := userRepo.NewUserRepository(h.db, h.util)
 	userServiceInstance := userService.NewUserService(userRepoInstance, h.util, h.validate)
 	userHandlerInstance := userHandler.NewUserHandler(userServiceInstance, h.util)
@@ -48,9 +49,13 @@ func (h *HTTPServer) Start() {
 	trackerServiceInstance := trackerService.NewTrackerService(trackerRepoInstance, h.util, h.validate)
 	trackerHandlerInstance := trackerHandler.NewTrackerHandler(trackerServiceInstance, h.util)
 
+	hub := ws.NewHub()
+	wsHandler := ws.NewHandler(hub, h.util)
+	go hub.Run()
+
 	// initialize routes?
 	// pass mw here
-	router := initializeRoutes(h.mux, userHandlerInstance, trackerHandlerInstance, middleware)
+	router := initializeRoutes(h.mux, userHandlerInstance, trackerHandlerInstance, wsHandler, middlewareInstance)
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%d", h.config.Server.Port),

@@ -16,29 +16,49 @@ jwt:
     secret:
 
 tables:
-
 CREATE TABLE users (
-    id INT(11) NOT NULL AUTO_INCREMENT,
-    username VARCHAR(20) NOT NULL UNIQUE,
-    password_hashed VARCHAR(60) NOT NULL,
-    profile_photo_url VARCHAR(255) DEFAULT NULL,
-    role varchar(20) NOT NULL DEFAULT "user",
-    first_name VARCHAR(50) DEFAULT NULL,
-    last_name VARCHAR(50) DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    bio TEXT DEFAULT NULL,
-    PRIMARY KEY (id)
+id SERIAL PRIMARY KEY,
+username VARCHAR(50) UNIQUE NOT NULL,
+password_hashed VARCHAR(60) NOT NULL,
+role varchar(20) not null default 'user'
 );
 
+
+CREATE TABLE user_profile (
+id SERIAL PRIMARY KEY,
+user_id bigint(20) unsigned NOT NULL,
+profile_photo_url VARCHAR(255),
+first_name VARCHAR(50),
+last_name VARCHAR(50),
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+bio TEXT,
+UNIQUE (user_id),
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE rooms (
+id SERIAL PRIMARY KEY,
+name VARCHAR(255),
+description text,
+);
+
+CREATE TABLE room_users (
+id SERIAL PRIMARY KEY,
+room_id bigint(20) unsigned REFERENCES rooms(id) ON DELETE CASCADE,
+user_id bigint(20) unsigned REFERENCES users(id) ON DELETE CASCADE,
+UNIQUE (room_id, user_id)
+);
+
+
 CREATE TABLE study_sessions (
-    id INT(11) NOT NULL AUTO_INCREMENT,
-    user_id INT(11) NOT NULL,
+    id serial NOT NULL,
+    user_id bigint(20) unsigned NOT Null references users(id) on delete cascade,
     name VARCHAR(30) DEFAULT NULL,
     session_start TIMESTAMP NOT NULL,
     session_end TIMESTAMP DEFAULT NULL,
     total_time INT(11) AS (TIMESTAMPDIFF(SECOND, session_start, session_end)) STORED,
     note TEXT DEFAULT NULL,
-    PRIMARY KEY (id),
+    PRIMARY KEY (id)
 );
 
 alter table study_sessions add constraint pk_study_sessions_users foreign key (user_id) references users(id);
