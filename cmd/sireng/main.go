@@ -10,7 +10,7 @@ import (
 
 //	@title			Sireng API Documentation
 //	@version		0.7
-//	@description	Sinau bareng, a program that tracks user's study hours and share it with their friends! with Sireng, learning thins will be a lot more fun!
+//	@description Sireng is a badass API service that is designed for people who's lost in life, can't do shit for themselves and having a hard time focusing. Sireng tracks your learning process and turns it into informative graphs for you to use it as a means of review. Sireng has a chat feature that you can use to ask for feedback from your friends or you can simply use it to wake your friend up and tell em to lock tf in.
 
 //	@contact.name	chaaaeeee
 //	@contact.email	mash1o1o1o1@gmail.com

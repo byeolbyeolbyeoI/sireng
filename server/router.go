@@ -7,7 +7,7 @@ import (
 	userProfileHandler "github.com/chaaaeeee/sireng/internal/user/profile/handler"
 	ws "github.com/chaaaeeee/sireng/internal/ws"
 	"github.com/chaaaeeee/sireng/middleware"
-	"github.com/swaggo/http-swagger" // http-swagger middleware
+	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
 	"net/http"
 )
 
@@ -39,10 +39,14 @@ func initializeRoutes(mux *http.ServeMux, userHandler userHandler.UserHandler, u
 	mux.Handle("PATCH /updateBio", AuthUser(userProfileHandler.UpdateBio, middleware))
 
 	mux.HandleFunc("POST /ws/createRoom", wsHandler.CreateRoom)
+	mux.HandleFunc("/ws/joinRoom/{roomId}", wsHandler.JoinRoom)
 	mux.HandleFunc("GET /ws/getRooms", wsHandler.GetRooms)
+	mux.HandleFunc("GET /ws/getClients", wsHandler.GetClients)
 
 	// nantian
-	// mux.HandleFunc("GET /swagger/*", swaggerHandler)
+	mux.HandleFunc("GET /swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("/swagger/doc.json"),
+	))
 
 	return mux
 }

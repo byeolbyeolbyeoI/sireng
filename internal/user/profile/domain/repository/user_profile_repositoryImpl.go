@@ -40,7 +40,7 @@ func (u *userProfileRepositoryImpl) UpdateFirstName(username string, newFirstNam
 }
 
 func (u *userProfileRepositoryImpl) UpdateLastName(username string, newLastName string) error {
-	_, err := u.db.Exec("UPDATE user_profile SET last_name = ? WHERE username = ?", newLastName, username)
+	_, err := u.db.Exec("UPDATE user_profile b INNER JOIN users a ON b.user_id = a.id SET b.last_name = ? WHERE a.username = ?", newLastName, username)
 	if err != nil {
 		return err
 	}
@@ -49,7 +49,7 @@ func (u *userProfileRepositoryImpl) UpdateLastName(username string, newLastName 
 }
 
 func (u *userProfileRepositoryImpl) UpdateBio(username string, newBio string) error {
-	_, err := u.db.Exec("UPDATE user_profile SET bio = ? WHERE username = ?", newBio, username)
+	_, err := u.db.Exec("UPDATE user_profile b INNER JOIN users a ON b.user_id = a.id SET b.bio = ? WHERE a.username = ?", newBio, username)
 	if err != nil {
 		return err
 	}

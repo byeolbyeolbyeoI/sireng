@@ -1,5 +1,5 @@
 ## Introduction
-Sireng is a badass API service that is designed for people who's lost in life, can't do shit by himself and having a hard time focusing. Sireng tracks your learning process and turns it into informative graphs for you to use it as a means of review. Sireng has a chat feature that you can use to ask for feedback from your friends or you can simply use it to wake your friend up and tell em to lock tf in.
+Sireng is a badass API service that is designed for people who's lost in life, can't do shit for themselves and having a hard time focusing. Sireng tracks your learning process and turns it into informative graphs for you to use it as a means of review. Sireng has a chat feature that you can use to ask for feedback from your friends or you can simply use it to wake your friend up and tell em to lock tf in.
 
 ## Features
 - **User Authentication**: Secure authentication using JWT.

@@ -65,6 +65,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func (h *Handler) JoinRoom(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("tes")
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		h.util.WriteJSON(w, http.StatusInternalServerError, util.Response{
