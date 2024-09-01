@@ -7,9 +7,12 @@ import (
 	trackerRepo "github.com/chaaaeeee/sireng/internal/tracker/domain/repository"
 	trackerService "github.com/chaaaeeee/sireng/internal/tracker/domain/service"
 	trackerHandler "github.com/chaaaeeee/sireng/internal/tracker/handler"
-	userRepo "github.com/chaaaeeee/sireng/internal/user/domain/repository"
-	userService "github.com/chaaaeeee/sireng/internal/user/domain/service"
-	userHandler "github.com/chaaaeeee/sireng/internal/user/handler"
+	userRepo "github.com/chaaaeeee/sireng/internal/user/auth/domain/repository"
+	userService "github.com/chaaaeeee/sireng/internal/user/auth/domain/service"
+	userHandler "github.com/chaaaeeee/sireng/internal/user/auth/handler"
+	userProfileRepo "github.com/chaaaeeee/sireng/internal/user/profile/domain/repository"
+	userProfileService "github.com/chaaaeeee/sireng/internal/user/profile/domain/service"
+	userProfileHandler "github.com/chaaaeeee/sireng/internal/user/profile/handler"
 	ws "github.com/chaaaeeee/sireng/internal/ws"
 	middleware "github.com/chaaaeeee/sireng/middleware"
 	"github.com/chaaaeeee/sireng/util"
@@ -41,9 +44,14 @@ func NewServer(conf *config.Config, db *sql.DB, util util.Util) Server {
 func (h *HTTPServer) Start() {
 	middlewareService := middleware.NewMiddlewareService(h.config)
 	middlewareInstance := middleware.NewMiddleware(middlewareService, h.util)
+
 	userRepoInstance := userRepo.NewUserRepository(h.db, h.util)
 	userServiceInstance := userService.NewUserService(userRepoInstance, h.util, h.validate)
 	userHandlerInstance := userHandler.NewUserHandler(userServiceInstance, h.util)
+
+	userProfileRepoInstance := userProfileRepo.NewUserProfileRepository(h.db, h.util)
+	userProfileServiceInstance := userProfileService.NewUserProfileService(userProfileRepoInstance, h.util, h.validate)
+	userProfileHandlerInstance := userProfileHandler.NewUserProfileHandler(userProfileServiceInstance, h.util)
 
 	trackerRepoInstance := trackerRepo.NewTrackerRepository(h.db, h.util)
 	trackerServiceInstance := trackerService.NewTrackerService(trackerRepoInstance, h.util, h.validate)
@@ -55,7 +63,13 @@ func (h *HTTPServer) Start() {
 
 	// initialize routes?
 	// pass mw here
-	router := initializeRoutes(h.mux, userHandlerInstance, trackerHandlerInstance, wsHandler, middlewareInstance)
+	router := initializeRoutes(
+		h.mux,
+		userHandlerInstance,
+		userProfileHandlerInstance,
+		trackerHandlerInstance,
+		wsHandler,
+		middlewareInstance)
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%d", h.config.Server.Port),
