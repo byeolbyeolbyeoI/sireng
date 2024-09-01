@@ -31,13 +31,28 @@ func (u *userProfileRepositoryImpl) UpdateProfilePhotoURL(username string, newPr
 }
 
 func (u *userProfileRepositoryImpl) UpdateFirstName(username string, newFirstName string) error {
+	_, err := u.db.Exec("UPDATE user_profile b INNER JOIN users a ON b.user_id = a.id SET b.first_name = ? WHERE a.username = ?", newFirstName, username)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (u *userProfileRepositoryImpl) UpdateLastName(username string, newLastName string) error {
+	_, err := u.db.Exec("UPDATE user_profile SET last_name = ? WHERE username = ?", newLastName, username)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (u *userProfileRepositoryImpl) UpdateBio(username string, newBio string) error {
+	_, err := u.db.Exec("UPDATE user_profile SET bio = ? WHERE username = ?", newBio, username)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

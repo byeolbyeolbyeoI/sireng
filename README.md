@@ -1,64 +1,49 @@
-sireng, sinau bareng, buat tracking belajar, tp bisa add friend, chatting, ingetin tmen buat belajar dll
+## Introduction
+Sireng is a badass API service that is designed for people who's lost in life, can't do shit by himself and having a hard time focusing. Sireng tracks your learning process and turns it into informative graphs for you to use it as a means of review. Sireng has a chat feature that you can use to ask for feedback from your friends or you can simply use it to wake your friend up and tell em to lock tf in.
 
-pake ap aja :
-golang, clean code, ddd, mysql, redis caching, schema validation, aws s3 bucket, docker dll
+## Features
+- **User Authentication**: Secure authentication using JWT.
+- **Session Management**: Tracks study sessions with detailed time logging.
+- **Social Interaction**: Add friends and chat along.
+- **Redis Caching**: Faster performance with Redis Caching.
+- **AWS S3 Integration**: Store and retrieve profile photos using AWS S3 Bucket.
 
+## Getting Started
+
+## Prerequisites
+Before you begin, ensure you have the following installed:
+- [Go](https://golang.org/dl/) (v1.18 or higher)
+- [MySQL](https://www.mysql.com/downloads/) (or compatible database)
+- [Redis](https://redis.io/download)
+- [Docker](https://www.docker.com/products/docker-desktop) (optional, for containerized deployment)
+
+### Installation
+1. **Clone the repository:**
+```bash
+git clone https://github.com/chaaaeeee/sireng.git
+cd sireng
+```
+2. **Install dependencies:**
+```bash
+go mod download
+```   
+3. **Setup configuration:**
+```yaml
 server:
-    port: 8080
-database
-    user:
-    password:
-    protocol:
-    path:
-    dbname:
+  port: 8080
+database:
+  user: root
+  password: 
+  protocol: tcp
+  path: localhost:3306
+  dbname: sireng
 
 jwt:
-    secret:
-
-tables:
-CREATE TABLE users (
-id SERIAL PRIMARY KEY,
-username VARCHAR(50) UNIQUE NOT NULL,
-password_hashed VARCHAR(60) NOT NULL,
-role varchar(20) not null default 'user'
-);
-
-
-CREATE TABLE user_profile (
-id SERIAL PRIMARY KEY,
-user_id bigint(20) unsigned NOT NULL,
-profile_photo_url VARCHAR(255),
-first_name VARCHAR(50),
-last_name VARCHAR(50),
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-bio TEXT,
-UNIQUE (user_id),
-FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE TABLE rooms (
-id SERIAL PRIMARY KEY,
-name VARCHAR(255),
-description text,
-);
-
-CREATE TABLE room_users (
-id SERIAL PRIMARY KEY,
-room_id bigint(20) unsigned REFERENCES rooms(id) ON DELETE CASCADE,
-user_id bigint(20) unsigned REFERENCES users(id) ON DELETE CASCADE,
-UNIQUE (room_id, user_id)
-);
-
-
-CREATE TABLE study_sessions (
-    id serial NOT NULL,
-    user_id bigint(20) unsigned NOT Null references users(id) on delete cascade,
-    name VARCHAR(30) DEFAULT NULL,
-    session_start TIMESTAMP NOT NULL,
-    session_end TIMESTAMP DEFAULT NULL,
-    total_time INT(11) AS (TIMESTAMPDIFF(SECOND, session_start, session_end)) STORED,
-    note TEXT DEFAULT NULL,
-    PRIMARY KEY (id)
-);
-
-alter table study_sessions add constraint pk_study_sessions_users foreign key (user_id) references users(id);
+  secret: kobochan
+```
+4. **Run the application:**
+```bash
+go run cmd/sireng/main.go
+```
+## Usage
+swagger
